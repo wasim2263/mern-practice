@@ -20,17 +20,26 @@ export default class RestaurantsDAO {
                                 } = {}) {
         let query
         if (filters) {
-            
+
         }
         let cursor
         try {
             cursor = await restaurants.find(query)
-        }catch (e) {
+        } catch (e) {
             console.error(e)
-            return{restaurants:[], totalNumberOfRestaurants:0}
+            return {restaurants: [], totalNumberOfRestaurants: 0}
         }
-        const displayCursor = cursor.limit(restaurantsPerPage).skip(restaurants)
+        const displayCursor = cursor.limit(restaurantsPerPage).skip(restaurantsPerPage * page)
+        try {
+            const restaurants = await displayCursor.toArray()
+            const totalNumberOfRestaurants = await restaurants.countDcoument(query)
+            return {restaurants, totalNumberOfRestaurants}
 
+        } catch (e) {
+            console.error(e)
+            return {restaurants: [], totalNumberOfRestaurants: 0}
+
+        }
 
     }
 }
