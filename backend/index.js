@@ -9,7 +9,6 @@ const port = process.env.PORT || 8000
 mongoClient.connect(
     process.env.DB_URI,
     {
-        poolSize: 50,
         useNewUrlParser: true,
         useUnifiedTopology: true,
         connectTimeoutMS: 1000,

@@ -7,9 +7,9 @@ export default class RestaurantsDAO {
         }
         try {
             restaurants = await conn.db(process.env.NS).collection('restaurants');
-            console.log(restaurants)
+            console.log('----',await restaurants.countDocuments())
         } catch (e) {
-            console.log(e)
+            console.log('----err',e)
         }
     }
 
@@ -20,7 +20,9 @@ export default class RestaurantsDAO {
                                 } = {}) {
         let query
         if (filters) {
-
+            if ("name" in filters) {
+                query = {$text: {search: filters["name"]}}
+            }
         }
         let cursor
         try {
@@ -31,13 +33,21 @@ export default class RestaurantsDAO {
         }
         const displayCursor = cursor.limit(restaurantsPerPage).skip(restaurantsPerPage * page)
         try {
-            const restaurants = await displayCursor.toArray()
-            const totalNumberOfRestaurants = await restaurants.countDcoument(query)
-            return {restaurants, totalNumberOfRestaurants}
+            const restaurantList = await displayCursor.toArray()
+            console.log(restaurantList)
+            console.log(query)
+            const totalNumberOfRestaurants = await restaurants.countDocuments(query)
+            console.log(restaurantList, totalNumberOfRestaurants,restaurants.countDocuments)
+            return {restaurantList, totalNumberOfRestaurants}
 
         } catch (e) {
             console.error(e)
-            return {restaurants: [], totalNumberOfRestaurants: 0}
+            // restaurants.insertOne({
+            //     name:'Better Post!',
+            //     slug:'a-better-post',
+            //
+            // })
+            return {restaurantList: [], totalNumberOfRestaurants: 0}
 
         }
 
